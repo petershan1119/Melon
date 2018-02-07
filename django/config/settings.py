@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'song.apps.SongConfig',
     'album.apps.AlbumConfig',
     'artist.apps.ArtistConfig',
+    'django_extensions',
 
     'django.contrib.admin',
     'django.contrib.auth',
