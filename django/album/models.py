@@ -23,5 +23,9 @@ class Album(models.Model):
         return f''
 
     def __str__(self):
-        return f'{self.title} {[item for item in self.artists.all().values_list("name", flat=True)]}'
-    # ', '.join([artist.name for artist in a1.artists.all()]) or ', '.join(a1.artist.values_list('name', flat=True))
+        return '{title} [{artist}]'.format(
+            title=self.title,
+            artist=', '.join(self.artists.values_list('name', flat=True))
+        )
+        # return f'{self.title} {[item for item in self.artists.all().values_list("name", flat=True)]}'
+    # ', '.join([artist.name for artist in a1.artists.all()]) or ', '.join(a1.artists.values_list('name', flat=True))
