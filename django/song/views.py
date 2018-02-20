@@ -1,3 +1,6 @@
+from collections import namedtuple
+from typing import NamedTuple
+
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -57,6 +60,13 @@ def song_search(request):
 
     keyword = request.GET.get('keyword')
 
+    # SongInfo = namedtuple('SongInfo', ['type', 'q'])
+
+    class SongInfo(NamedTuple):
+        type: str
+        q: Q
+
+
     # keyword = request.POST['keyword'].strip()
 
     # if keyword:
@@ -91,14 +101,26 @@ def song_search(request):
         'song_infos': [],
     }
     if keyword:
-        q1 = Q(album__artists__name__contains=keyword)
-        q2 = Q(album__title__contains=keyword)
-        q3 = Q(title__contains=keyword)
+        # q1 = Q(album__artists__name__contains=keyword)
+        # q2 = Q(album__title__contains=keyword)
+        # q3 = Q(title__contains=keyword)
         # songs_from_artists = Song.objects.filter(album__artists__name__contains=keyword)
         # songs_from_albums = Song.objects.filter(album__title__contains=keyword)
         # songs_from_title = Song.objects.filter(title__contains=keyword)
 
-        for type, q in zip(('아티스트명', '앨범명', '타이틀명'), (q1, q2, q3)):
+        song_infos = (
+            SongInfo(
+                type='아티스트명',
+                q=Q(album__artists__name__contains=keyword)),
+            SongInfo(
+                type='앨범명',
+                q=Q(album__title__contains=keyword)),
+            SongInfo(
+                type='노래제목',
+                q=Q(title__contains=keyword)),
+        )
+
+        for type, q in song_infos:
             context['song_infos'].append({
                 'type': type,
                 'songs': Song.objects.filter(q),

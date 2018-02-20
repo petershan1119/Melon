@@ -1,19 +1,10 @@
-import datetime
 from django.shortcuts import render, redirect
+from ...models import Artist
 
-from artist.models import Artist
+__all__ = (
+    'artist_add',
+)
 
-from django.http import HttpResponse
-
-def artist_list(request):
-    # 전체 Artist목록을 ul > li로 출력
-    # 템플릿은 'artist/artist_list.html'을 사용
-    # 전달할 context키는 'artist'를 사용
-    artists = Artist.objects.all()
-    context = {
-        'artists': artists,
-    }
-    return render(request, 'artist/artist_list.html', context)
 
 def artist_add(request):
     # Artist클래스가 받을 수 있는 모든 input을 구현
