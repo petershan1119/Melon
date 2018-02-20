@@ -49,7 +49,7 @@ def song_search(request):
     세 변수를 이용해 검색 결과를 3단으로 분리해서 출력
         -> 아티스트로 검색한 노래 결과, 앨범으로 검색한 노래 결과, 제목으로 검색한 노래 결과
     """
-    context = {}
+    # context = {}
     # if request.method == 'POST':
     # print(request.GET)
     # print(type(request.GET))
@@ -58,25 +58,49 @@ def song_search(request):
     keyword = request.GET.get('keyword')
 
     # keyword = request.POST['keyword'].strip()
-    if keyword:
-        songs_from_artists = Song.objects.filter(album__artists__name__contains=keyword)
-        songs_from_albums = Song.objects.filter(album__title__contains=keyword)
-        songs_from_title = Song.objects.filter(title__contains=keyword)
+
+    # if keyword:
+    #     songs_from_artists = Song.objects.filter(album__artists__name__contains=keyword)
+    #     songs_from_albums = Song.objects.filter(album__title__contains=keyword)
+    #     songs_from_title = Song.objects.filter(title__contains=keyword)
+
         # songs = Song.objects.filter(
         #     Q(album__title__contains=keyword)|
         #     Q(album__artists__name__contains=keyword)|
         #     Q(title__contains=keyword)
         # ).distinct()
-        if not songs_from_artists:
-            context['form_error1'] = "찾는 아티스트의 노래가 없습니다."
-        else:
-            context['songs_from_artists'] = songs_from_artists
-        if not songs_from_albums:
-            context['form_error2'] = "찾는 앨범의 노래가 없습니다."
-        else:
-            context['songs_from_albums'] = songs_from_albums
-        if not songs_from_title:
-            context['form_error3'] = "찾는 타이틀의 노래가 없습니다."
-        else:
-            context['songs_from_title'] = songs_from_title
+
+        # if not songs_from_artists:
+        #     context['form_error1'] = "찾는 아티스트의 노래가 없습니다."
+        # else:
+        #     context['songs_from_artists'] = songs_from_artists
+        # if not songs_from_albums:
+        #     context['form_error2'] = "찾는 앨범의 노래가 없습니다."
+        # else:
+        #     context['songs_from_albums'] = songs_from_albums
+        # if not songs_from_title:
+        #     context['form_error3'] = "찾는 타이틀의 노래가 없습니다."
+        # else:
+        #     context['songs_from_title'] = songs_from_title
+
+    # [ {'type'" '아티스트', 'songs': QuerySet<Song>},
+    #   {'type': '앨범', 'songs': QuerySet<Song>},
+    #   {'type': '타이틀', 'songs': QuerySet<Song>} ]
+
+    context = {
+        'song_infos': [],
+    }
+    if keyword:
+        q1 = Q(album__artists__name__contains=keyword)
+        q2 = Q(album__title__contains=keyword)
+        q3 = Q(title__contains=keyword)
+        # songs_from_artists = Song.objects.filter(album__artists__name__contains=keyword)
+        # songs_from_albums = Song.objects.filter(album__title__contains=keyword)
+        # songs_from_title = Song.objects.filter(title__contains=keyword)
+
+        for type, q in zip(('아티스트명', '앨범명', '타이틀명'), (q1, q2, q3)):
+            context['song_infos'].append({
+                'type': type,
+                'songs': Song.objects.filter(q),
+            })
     return render(request, 'song/song_search.html', context)
