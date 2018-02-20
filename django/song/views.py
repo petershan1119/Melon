@@ -50,8 +50,15 @@ def song_search(request):
         -> 아티스트로 검색한 노래 결과, 앨범으로 검색한 노래 결과, 제목으로 검색한 노래 결과
     """
     context = {}
-    if request.method == 'POST':
-        keyword = request.POST['keyword'].strip()
+    # if request.method == 'POST':
+    # print(request.GET)
+    # print(type(request.GET))
+    # print(request.GET['keyword'])
+
+    keyword = request.GET.get('keyword')
+
+    # keyword = request.POST['keyword'].strip()
+    if keyword:
         songs_from_artists = Song.objects.filter(album__artists__name__contains=keyword)
         songs_from_albums = Song.objects.filter(album__title__contains=keyword)
         songs_from_title = Song.objects.filter(title__contains=keyword)
@@ -60,15 +67,15 @@ def song_search(request):
         #     Q(album__artists__name__contains=keyword)|
         #     Q(title__contains=keyword)
         # ).distinct()
-        if not songs_from_artists or not keyword:
+        if not songs_from_artists:
             context['form_error1'] = "찾는 아티스트의 노래가 없습니다."
         else:
             context['songs_from_artists'] = songs_from_artists
-        if not songs_from_albums or not keyword:
+        if not songs_from_albums:
             context['form_error2'] = "찾는 앨범의 노래가 없습니다."
         else:
             context['songs_from_albums'] = songs_from_albums
-        if not songs_from_title or not keyword:
+        if not songs_from_title:
             context['form_error3'] = "찾는 타이틀의 노래가 없습니다."
         else:
             context['songs_from_title'] = songs_from_title
